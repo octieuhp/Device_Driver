@@ -1,0 +1,1 @@
+cmd_/home/trungmd/codeblocks/LinuxKernel/linuxDevice/phan_1/bai_1_3/hello.ko := ld -r -m elf_i386 -T ./scripts/module-common.lds --build-id  -o /home/trungmd/codeblocks/LinuxKernel/linuxDevice/phan_1/bai_1_3/hello.ko /home/trungmd/codeblocks/LinuxKernel/linuxDevice/phan_1/bai_1_3/hello.o /home/trungmd/codeblocks/LinuxKernel/linuxDevice/phan_1/bai_1_3/hello.mod.o ;  true
