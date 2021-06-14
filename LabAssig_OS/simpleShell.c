@@ -1,16 +1,16 @@
-#include <unistd.h>
-#include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <sys/wait.h>
-#include "build_in_command.h"
+#include "simpleShell.h"
 
-#define shellPrompt "][myShell> "
-
-static char *working_directory;
+void test(void){
+    return;
+}
 
 void parseInput(char *token, char *input, char **result)
-{
+{   
     int i = 0;
     token = strtok(input, " ");
     while(token != NULL){
@@ -22,68 +22,39 @@ void parseInput(char *token, char *input, char **result)
     return ;
 }
 
-int main(int argc, char *argv[]){
-    char *cmd, *token = malloc(sizeof(char*));
-    char *current_directory = malloc(sizeof(char*));
-    working_directory = malloc(sizeof(char*));
-    //char **arg = malloc(sizeof(char**));
-    char *arg[10];
-    int i;
-    /* for(int i = 0; i < 10; i++)
-        arg[i] = malloc(sizeof(char*)); */
+void run(char **command, char *path[], int numberElement){
 
-    for(int i = 0; i < 10; i++)
-        arg[i] = malloc(sizeof(char*));
+    char *cmdtemp = malloc(1024*sizeof(char*));
+    int ret;
+    if((numberElement) == 0){
+        printf("Can't found Path!\n");
+        free(cmdtemp);
+        return;
+    }
 
-    cmd = malloc(sizeof(char*));
-    working_directory = getcwd(current_directory, 1024);
-    strcat(working_directory, shellPrompt);
-
-	while(1)
-	{
-        printf("%s", working_directory);
-        fgets(cmd, 1024, stdin);
-
-		if(cmd[0] != 0x0A)
-		{
-            cmd[strlen(cmd)-1] = '\0';
-            //printf("%s",cmd);
-
-            parseInput(token, cmd, arg);
-           /*  printf("%s+", arg[0]);*/
-            printf("[%s]", arg[1]); 
-		}
-		else
-            continue;
-        if(0 == strcmp(arg[0], "exit"))
-            exit(0);
-
-        if(!strcmp(arg[0], "cd")){
-            build_in_CD(arg[1], working_directory, shellPrompt);
-            continue;
+    for(int i = 0; i < numberElement; i++){
+        strcpy(cmdtemp, path[i]);
+        cmdtemp = strcat(cmdtemp, command[0]);
+        ret = access(cmdtemp, X_OK);
+        if(!ret){
+            //strcpy(command[0], cmdtemp);
+            ret = fork();
+            if(ret < 0){
+                printf("Can't run program!\n");
+                free(cmdtemp);
+                return;
+            }
+            if(ret == 0){
+                //execv(command[0], command);
+                execv(cmdtemp, command);
+            }
+            else
+                wait(NULL);
+            free(cmdtemp);
+            return;
         }
-
-        char *command = malloc(sizeof(char*));
-        strcpy(command, "/bin/");
-        strcat(command, arg[0]);
-        i = fork();
-        if(i == 0){
-            //execvp(arg[0], arg);
-            execv(command, arg);
-        }
-        else
-        {
-            wait(NULL);
-        }
-	}
-
-    for (int i = 0; i < 10; i++)
-        free(arg[i]);
-    free(working_directory);
-    free(cmd);
-    free(token);
-    free(current_directory);
-	return 0;  
+    }
+    printf("Command %s not found!!\n", command[0]);
+    free(cmdtemp);
+    return;
 }
-  
-

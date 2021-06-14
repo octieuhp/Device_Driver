@@ -4,14 +4,14 @@ CC = gcc
 CFLAGS = -Wall -I$(INC_DIR)
 OBJS = build_in_command.o simpleShell.o
 
-all: simpleShell
+all: myshell
 
-simpleShell: simpleShell.o build_in_command.o
-	$(CC) $(CFLAGS) -o $@ simpleShell.o build_in_command.o
+myshell: simpleShell.o build_in_command.o myshell.o
+	$(CC) $(CFLAGS) -o $@ $^ 
 
 .c.o:
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 
 clean:
-	-rm -f $(OBJS) simpleShell
+	-rm -f $(OBJS) myshell
